@@ -1,43 +1,64 @@
 const root = document.documentElement;
 const themeSelect = document.getElementById("themeSelect");
-const savedTheme = (() => {
-  try { return localStorage.getItem("frame7-theme"); } catch (_) { return null; }
-})();
-const allowedThemes = ["blue", "light", "dark", "white", "green", "purple", "yellow"];
-
-function setTheme(theme) {
-  if (!allowedThemes.includes(theme)) theme = "dark";
-  root.dataset.theme = theme;
-  themeSelect.value = theme;
-  try { localStorage.setItem("frame7-theme", theme); } catch (_) {}
+const themes = ["blue","light","dark","white","green","purple","yellow"];
+function setTheme(theme){
+  if(!themes.includes(theme)) theme="dark";
+  root.dataset.theme=theme;
+  themeSelect.value=theme;
+  try{localStorage.setItem("frame7-premium-theme",theme)}catch(e){}
 }
+let initialTheme="dark";
+try{initialTheme=localStorage.getItem("frame7-premium-theme")||"dark"}catch(e){}
+setTheme(initialTheme);
+themeSelect.addEventListener("change",e=>setTheme(e.target.value));
 
-setTheme(savedTheme || "dark");
-themeSelect.addEventListener("change", event => setTheme(event.target.value));
-
-const menuToggle = document.getElementById("menuToggle");
-const mainNav = document.getElementById("mainNav");
-menuToggle.addEventListener("click", () => {
-  const isOpen = mainNav.classList.toggle("open");
-  menuToggle.setAttribute("aria-expanded", String(isOpen));
+const menuButton=document.getElementById("menuButton");
+const nav=document.getElementById("nav");
+menuButton.addEventListener("click",()=>{
+  const open=nav.classList.toggle("open");
+  menuButton.setAttribute("aria-expanded",String(open));
+  menuButton.setAttribute("aria-label",open?"Close menu":"Open menu");
+  menuButton.textContent=open?"×":"☰";
 });
-mainNav.querySelectorAll("a").forEach(link => {
-  link.addEventListener("click", () => {
-    mainNav.classList.remove("open");
-    menuToggle.setAttribute("aria-expanded", "false");
+nav.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>{
+  nav.classList.remove("open");
+  menuButton.setAttribute("aria-expanded","false");
+  menuButton.setAttribute("aria-label","Open menu");
+  menuButton.textContent="☰";
+}));
+
+document.getElementById("year").textContent=new Date().getFullYear();
+
+const filterButtons=[...document.querySelectorAll(".filter")];
+const projects=[...document.querySelectorAll(".project-card")];
+filterButtons.forEach(button=>button.addEventListener("click",()=>{
+  const filter=button.dataset.filter;
+  filterButtons.forEach(item=>item.classList.toggle("active",item===button));
+  projects.forEach(project=>{
+    const visible=filter==="all"||project.dataset.category===filter;
+    project.classList.toggle("hidden",!visible);
   });
-});
+}));
 
-document.getElementById("year").textContent = new Date().getFullYear();
-
-const sections = [...document.querySelectorAll("main section[id]")];
-const navLinks = [...mainNav.querySelectorAll("a")];
-if ("IntersectionObserver" in window) {
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      navLinks.forEach(link => link.classList.toggle("active", link.getAttribute("href") === `#${entry.target.id}`));
+const revealEls=document.querySelectorAll(".reveal");
+if("IntersectionObserver" in window && !window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+  const observer=new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){entry.target.classList.add("visible");observer.unobserve(entry.target)}
     });
-  }, { rootMargin: "-35% 0px -55% 0px" });
-  sections.forEach(section => observer.observe(section));
+  },{threshold:.12});
+  revealEls.forEach(el=>observer.observe(el));
+}else{revealEls.forEach(el=>el.classList.add("visible"))}
+
+const sections=[...document.querySelectorAll("main section[id]")];
+const navLinks=[...nav.querySelectorAll("a")];
+if("IntersectionObserver" in window){
+  const navObserver=new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        navLinks.forEach(link=>link.classList.toggle("active",link.getAttribute("href")===`#${entry.target.id}`));
+      }
+    });
+  },{rootMargin:"-35% 0px -55% 0px"});
+  sections.forEach(section=>navObserver.observe(section));
 }
