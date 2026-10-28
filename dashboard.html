@@ -1,0 +1,456 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101010">
+  <meta name="description" content="7FRAME Production Studio — Audition Management Dashboard">
+  <title>Audition Dashboard | 7FRAME Production Studio</title>
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="dashboard.css">
+  <script src="dashboard.js" defer></script>
+</head>
+<body class="dashboard-page">
+
+  <div class="dash-layout">
+
+    <aside class="dash-sidebar" id="dashSidebar">
+      <a class="dash-brand" href="index.html" aria-label="7FRAME home">
+        <span class="dash-brand-mark">7F</span>
+        <span class="dash-brand-copy">
+          <strong>7FRAME</strong>
+          <small>PRODUCTION STUDIO</small>
+        </span>
+      </a>
+
+      <div class="dash-workspace">
+        <span class="dash-workspace-dot"></span>
+        <span>Studio Workspace</span>
+        <span class="dash-demo-tag">DEMO</span>
+      </div>
+
+      <nav class="dash-nav" aria-label="Dashboard navigation">
+        <span class="dash-nav-label">WORKSPACE</span>
+
+        <a href="#overview" class="dash-nav-link is-active" data-section="overview">
+          <span class="dash-nav-icon">◫</span>
+          Overview
+        </a>
+
+        <a href="#applicants" class="dash-nav-link" data-section="applicants">
+          <span class="dash-nav-icon">♙</span>
+          Applicants
+          <span class="dash-nav-count" id="sidebarApplicantCount">0</span>
+        </a>
+
+        <a href="#pipeline" class="dash-nav-link" data-section="pipeline">
+          <span class="dash-nav-icon">⇢</span>
+          Audition Pipeline
+        </a>
+
+        <span class="dash-nav-label dash-nav-label-spaced">QUICK ACCESS</span>
+
+        <a href="casting.html" class="dash-nav-link">
+          <span class="dash-nav-icon">↗</span>
+          Casting Page
+        </a>
+
+        <a href="index.html" class="dash-nav-link">
+          <span class="dash-nav-icon">⌂</span>
+          Main Website
+        </a>
+      </nav>
+
+      <div class="dash-sidebar-bottom">
+        <div class="dash-sidebar-note">
+          <span class="dash-note-icon">✳</span>
+          <strong>Studio Demo Mode</strong>
+          <p>Manage sample applicants locally. No backend connected.</p>
+        </div>
+
+        <div class="dash-profile">
+          <div class="dash-avatar">7F</div>
+          <div class="dash-profile-copy">
+            <strong>Studio Admin</strong>
+            <small>Demo Workspace</small>
+          </div>
+          <span class="dash-profile-menu">•••</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="dash-main">
+
+      <header class="dash-topbar">
+        <div class="dash-topbar-left">
+          <button class="dash-icon-button dash-mobile-menu"
+                  id="dashMenuToggle"
+                  type="button"
+                  aria-label="Open dashboard menu"
+                  aria-expanded="false">
+            ☰
+          </button>
+
+          <div class="dash-breadcrumb">
+            <span>Studio</span>
+            <span class="dash-breadcrumb-separator">/</span>
+            <strong>Audition Management</strong>
+          </div>
+        </div>
+
+        <div class="dash-topbar-actions">
+          <span class="dash-live-indicator">
+            <span></span> LOCAL DEMO
+          </span>
+
+          <button class="dash-button dash-button-primary"
+                  id="openAddModal"
+                  type="button">
+            <span>＋</span> Add Applicant
+          </button>
+        </div>
+      </header>
+
+      <div class="dash-content">
+
+        <section class="dash-page-heading" id="overview">
+          <div>
+            <div class="dash-eyebrow">
+              <span class="dash-eyebrow-line"></span>
+              TALENT & CASTING
+            </div>
+            <h1>Audition <span>Management.</span></h1>
+            <p>Every performance starts with an opportunity.</p>
+          </div>
+
+          <div class="dash-heading-date">
+            <span class="dash-date-label">WORKSPACE DATE</span>
+            <strong id="dashboardDate">Loading date...</strong>
+            <small>Browser local time</small>
+          </div>
+        </section>
+
+        <section class="dash-demo-banner" aria-label="Demo mode notice">
+          <div class="dash-demo-banner-icon">i</div>
+          <div>
+            <strong>You're viewing a demo workspace</strong>
+            <p>Sample records are included. Changes are saved only in this browser.</p>
+          </div>
+          <button type="button" id="resetDemo" class="dash-text-button">
+            Reset demo data
+          </button>
+        </section>
+
+        <section class="dash-stats-grid" aria-label="Applicant statistics">
+          <article class="dash-stat-card">
+            <div class="dash-stat-top">
+              <span>Total Applicants</span>
+              <span class="dash-stat-icon">♙</span>
+            </div>
+            <strong class="dash-stat-number" id="statTotal">0</strong>
+            <div class="dash-stat-footer">
+              <span class="dash-stat-dot"></span>
+              All submitted records
+            </div>
+          </article>
+
+          <article class="dash-stat-card">
+            <div class="dash-stat-top">
+              <span>New Applications</span>
+              <span class="dash-stat-icon">✳</span>
+            </div>
+            <strong class="dash-stat-number" id="statNew">0</strong>
+            <div class="dash-stat-footer">
+              <span class="dash-status-dot status-new"></span>
+              Awaiting review
+            </div>
+          </article>
+
+          <article class="dash-stat-card">
+            <div class="dash-stat-top">
+              <span>Shortlisted</span>
+              <span class="dash-stat-icon">☆</span>
+            </div>
+            <strong class="dash-stat-number" id="statShortlisted">0</strong>
+            <div class="dash-stat-footer">
+              <span class="dash-status-dot status-shortlisted"></span>
+              Selected for next step
+            </div>
+          </article>
+
+          <article class="dash-stat-card">
+            <div class="dash-stat-top">
+              <span>Audition Scheduled</span>
+              <span class="dash-stat-icon">◷</span>
+            </div>
+            <strong class="dash-stat-number" id="statScheduled">0</strong>
+            <div class="dash-stat-footer">
+              <span class="dash-status-dot status-scheduled"></span>
+              Ready for audition
+            </div>
+          </article>
+        </section>
+
+        <section class="dash-pipeline-panel" id="pipeline">
+          <div class="dash-section-heading">
+            <div>
+              <span class="dash-section-kicker">APPLICATION JOURNEY</span>
+              <h2>Audition pipeline</h2>
+            </div>
+            <span class="dash-section-caption">Current status distribution</span>
+          </div>
+
+          <div class="dash-pipeline-grid">
+            <button type="button" class="dash-pipeline-stage" data-pipeline-status="New">
+              <span class="dash-pipeline-top">
+                <span class="dash-status-dot status-new"></span>
+                New
+              </span>
+              <strong id="pipeNew">0</strong>
+              <span class="dash-pipeline-bottom">Needs review <span>↗</span></span>
+              <span class="dash-pipeline-track"><span id="barNew"></span></span>
+            </button>
+
+            <button type="button" class="dash-pipeline-stage" data-pipeline-status="Reviewing">
+              <span class="dash-pipeline-top">
+                <span class="dash-status-dot status-reviewing"></span>
+                Reviewing
+              </span>
+              <strong id="pipeReviewing">0</strong>
+              <span class="dash-pipeline-bottom">Under evaluation <span>↗</span></span>
+              <span class="dash-pipeline-track"><span id="barReviewing"></span></span>
+            </button>
+
+            <button type="button" class="dash-pipeline-stage" data-pipeline-status="Shortlisted">
+              <span class="dash-pipeline-top">
+                <span class="dash-status-dot status-shortlisted"></span>
+                Shortlisted
+              </span>
+              <strong id="pipeShortlisted">0</strong>
+              <span class="dash-pipeline-bottom">Potential talent <span>↗</span></span>
+              <span class="dash-pipeline-track"><span id="barShortlisted"></span></span>
+            </button>
+
+            <button type="button" class="dash-pipeline-stage" data-pipeline-status="Scheduled">
+              <span class="dash-pipeline-top">
+                <span class="dash-status-dot status-scheduled"></span>
+                Scheduled
+              </span>
+              <strong id="pipeScheduled">0</strong>
+              <span class="dash-pipeline-bottom">Audition arranged <span>↗</span></span>
+              <span class="dash-pipeline-track"><span id="barScheduled"></span></span>
+            </button>
+          </div>
+        </section>
+
+        <section class="dash-applicants-panel" id="applicants">
+          <div class="dash-section-heading dash-applicants-heading">
+            <div>
+              <span class="dash-section-kicker">TALENT DATABASE</span>
+              <h2>Applicant directory</h2>
+              <p>Review profiles and manage audition progress.</p>
+            </div>
+
+            <button type="button" class="dash-button dash-button-outline" id="exportCSV">
+              <span>↓</span> Export CSV
+            </button>
+          </div>
+
+          <div class="dash-toolbar">
+            <label class="dash-search">
+              <span>⌕</span>
+              <input type="search"
+                     id="applicantSearch"
+                     placeholder="Search name, email, role..."
+                     autocomplete="off">
+              <kbd>SEARCH</kbd>
+            </label>
+
+            <div class="dash-filters">
+              <select id="statusFilter" aria-label="Filter by application status">
+                <option value="All">All statuses</option>
+                <option value="New">New</option>
+                <option value="Reviewing">Reviewing</option>
+                <option value="Shortlisted">Shortlisted</option>
+                <option value="Scheduled">Scheduled</option>
+                <option value="Selected">Selected</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+
+              <select id="roleFilter" aria-label="Filter by preferred role">
+                <option value="All">All roles</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="dash-table-wrap">
+            <table class="dash-table">
+              <thead>
+                <tr>
+                  <th>APPLICANT</th>
+                  <th>PREFERRED ROLE</th>
+                  <th>EXPERIENCE</th>
+                  <th>APPLIED ON</th>
+                  <th>STATUS</th>
+                  <th><span class="dash-sr-only">Actions</span> ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody id="applicantsTableBody"></tbody>
+            </table>
+          </div>
+
+          <div class="dash-empty-state" id="emptyState" hidden>
+            <span class="dash-empty-icon">⌕</span>
+            <h3>No applicants found</h3>
+            <p>Try another search, adjust your filters or add an applicant.</p>
+            <button type="button" class="dash-button dash-button-outline" id="clearFilters">
+              Clear filters
+            </button>
+          </div>
+
+          <div class="dash-table-footer">
+            <span id="tableSummary">Showing 0 applicants</span>
+            <div class="dash-table-footer-right">
+              <span class="dash-demo-tag">LOCAL DATA</span>
+            </div>
+          </div>
+        </section>
+
+        <footer class="dash-footer">
+          <span>© <span id="footerYear"></span> 7FRAME Production Studio</span>
+          <span>Made for stories worth telling.</span>
+        </footer>
+
+      </div>
+    </main>
+  </div>
+
+  <div class="dash-overlay" id="dashOverlay"></div>
+
+  <!-- Applicant create/edit modal -->
+  <div class="dash-modal-backdrop" id="applicantModal" hidden>
+    <section class="dash-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="dash-modal-header">
+        <div>
+          <span class="dash-section-kicker">TALENT RECORD</span>
+          <h2 id="modalTitle">Add applicant</h2>
+          <p>Enter applicant information for this demo workspace.</p>
+        </div>
+        <button type="button" class="dash-icon-button" id="closeModal" aria-label="Close modal">✕</button>
+      </div>
+
+      <form id="applicantForm">
+        <input type="hidden" id="applicantId">
+
+        <div class="dash-form-grid">
+          <div class="dash-form-field">
+            <label for="applicantName">Full name *</label>
+            <input id="applicantName" name="name" required maxlength="100" placeholder="e.g. Ayesha Rahman">
+          </div>
+
+          <div class="dash-form-field">
+            <label for="applicantAge">Age *</label>
+            <input id="applicantAge" name="age" type="number" required min="18" max="100" placeholder="18+">
+          </div>
+
+          <div class="dash-form-field">
+            <label for="applicantEmail">Email *</label>
+            <input id="applicantEmail" name="email" type="email" required maxlength="150" placeholder="name@example.com">
+          </div>
+
+          <div class="dash-form-field">
+            <label for="applicantPhone">Phone</label>
+            <input id="applicantPhone" name="phone" maxlength="40" placeholder="+880...">
+          </div>
+
+          <div class="dash-form-field">
+            <label for="applicantRole">Preferred role *</label>
+            <select id="applicantRole" name="role" required>
+              <option value="">Select a role</option>
+              <option>Lead Actor</option>
+              <option>Supporting Actor</option>
+              <option>Female Lead</option>
+              <option>Child Artist</option>
+              <option>Model</option>
+              <option>Voice Artist</option>
+              <option>Background Artist</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div class="dash-form-field">
+            <label for="applicantExperience">Experience *</label>
+            <select id="applicantExperience" name="experience" required>
+              <option value="">Select experience</option>
+              <option>Beginner</option>
+              <option>1–2 years</option>
+              <option>3–5 years</option>
+              <option>5+ years</option>
+            </select>
+          </div>
+
+          <div class="dash-form-field">
+            <label for="applicantLocation">Location</label>
+            <input id="applicantLocation" name="location" maxlength="100" placeholder="City, country">
+          </div>
+
+          <div class="dash-form-field">
+            <label for="applicantStatus">Application status</label>
+            <select id="applicantStatus" name="status">
+              <option>New</option>
+              <option>Reviewing</option>
+              <option>Shortlisted</option>
+              <option>Scheduled</option>
+              <option>Selected</option>
+              <option>Rejected</option>
+            </select>
+          </div>
+
+          <div class="dash-form-field dash-form-field-full">
+            <label for="applicantPortfolio">Portfolio / showreel URL</label>
+            <input id="applicantPortfolio" name="portfolio" type="url" maxlength="500" placeholder="https://...">
+          </div>
+
+          <div class="dash-form-field dash-form-field-full">
+            <label for="applicantNotes">Admin notes</label>
+            <textarea id="applicantNotes" name="notes" rows="3" maxlength="2000" placeholder="Add internal demo notes..."></textarea>
+          </div>
+        </div>
+
+        <p class="dash-form-notice">Demo only: do not enter sensitive personal information.</p>
+
+        <div class="dash-modal-actions">
+          <button type="button" class="dash-button dash-button-outline" id="cancelModal">Cancel</button>
+          <button type="submit" class="dash-button dash-button-primary" id="saveApplicant">Save applicant</button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <!-- Applicant detail modal -->
+  <div class="dash-modal-backdrop" id="detailModal" hidden>
+    <section class="dash-modal dash-detail-modal" role="dialog" aria-modal="true" aria-labelledby="detailName">
+      <div class="dash-modal-header">
+        <div>
+          <span class="dash-section-kicker">APPLICANT PROFILE</span>
+          <h2 id="detailName">Applicant</h2>
+          <p id="detailSubtitle">Application details</p>
+        </div>
+        <button type="button" class="dash-icon-button" id="closeDetailModal" aria-label="Close details">✕</button>
+      </div>
+
+      <div id="detailContent" class="dash-detail-content"></div>
+
+      <div class="dash-modal-actions">
+        <button type="button" class="dash-button dash-button-outline" id="detailEdit">Edit profile</button>
+        <button type="button" class="dash-button dash-button-primary" id="detailDone">Done</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="dash-toast" id="dashToast" role="status" aria-live="polite"></div>
+
+</body>
+</html>
